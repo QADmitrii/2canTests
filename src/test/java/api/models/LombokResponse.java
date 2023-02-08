@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class LombokResponse {
-    private String token,
+    private String message,
             error;
 }

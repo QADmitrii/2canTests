@@ -7,6 +7,8 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
 import static io.restassured.RestAssured.with;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 public class RegSpecs {
 
@@ -21,5 +23,7 @@ public class RegSpecs {
             .expectStatusCode(200)
             .log(LogDetail.STATUS)
             .log(LogDetail.BODY)
+            .expectBody("errors",nullValue())
+            .expectBody("base_id", notNullValue())
             .build();
 }
