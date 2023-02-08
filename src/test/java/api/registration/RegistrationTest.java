@@ -6,7 +6,8 @@ import api.models.LombokResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static api.specs.ErrorsSpecs.errorResponseEmail;
+import static api.specs.ErrorsSpecs.errorRegResponse;
+import static api.specs.ErrorsSpecs.errorRegResponseEmail;
 import static api.specs.RegSpecs.regRequestSpec;
 import static api.specs.RegSpecs.regResponseSpec;
 import static io.restassured.RestAssured.given;
@@ -14,22 +15,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RegistrationTest {
 
-    UserData userData = new UserData();
+
 
     @Test
     @DisplayName("Positive. Registration account")
     public void registrationTestSuccessful() {
+        UserData userData = new UserData();
         LombokBody body = new LombokBody();
 
         body.setEmail(userData.email);
         body.setPassword(userData.password);
         body.setUsername(userData.username);
-//        body.setPhone("");
-//        body.setConfig("4");
-//        body.setLocale("ru_RU");
-//        body.setC_code("RU");
-//        body.setTimezone("Europe/Moscow");
-//        body.setCurrency_code("RUB");
+        body.setPhone("+79168587588");
+        body.setConfig("4");
+        body.setLocale("ru_RU");
+        body.setC_code("RU");
+        body.setTimezone("Europe/Moscow");
+        body.setCurrency_code("RUB");
 
         given()
                 .spec(regRequestSpec)
@@ -45,6 +47,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Negative. Registration without email")
     public void registrationTestWithoutEmail() {
+        UserData userData = new UserData();
         LombokBody body = new LombokBody();
 
         body.setPassword(userData.password);
@@ -56,15 +59,34 @@ public class RegistrationTest {
                 .when()
                 .post()
                 .then()
-                .spec(errorResponseEmail)
+                .spec(errorRegResponseEmail)
                 .extract()
                 .as(LombokResponse.class);
 
         }
+    @Test
+    @DisplayName("Negative. Registration used email")
+    public void registrationTestUsedEmail() {
+        LombokBody body = new LombokBody();
+
+        body.setEmail("d.butov@smart-fin.ru");
+
+        LombokResponse response = given()
+                .spec(regRequestSpec)
+                .body(body)
+                .when()
+                .post()
+                .then()
+                .spec(errorRegResponse)
+                .extract()
+                .as(LombokResponse.class);
+
+    }
 
     @Test
     @DisplayName("Negative. Registration without pass")
     public void registrationTestWithoutPass() {
+        UserData userData = new UserData();
         LombokBody body = new LombokBody();
 
         body.setEmail(userData.email);
@@ -85,6 +107,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Negative. Registration without username")
     public void registrationTestWithoutUsername() {
+        UserData userData = new UserData();
         LombokBody body = new LombokBody();
 
         body.setEmail(userData.email);
@@ -97,6 +120,33 @@ public class RegistrationTest {
                 .post()
                 .then()
                 .spec(regResponseSpec)
+                .extract()
+                .as(LombokResponse.class);
+
+    }
+
+    @Test
+    @DisplayName("Negative. Registration incorrect data")
+    public void registrationTestIncorrectData() {
+        LombokBody body = new LombokBody();
+
+        body.setEmail("#$#$!@22@ff.@ff");
+        body.setPassword("@%^%$&$^#$%@");
+        body.setUsername("$!@!$1@$^$&$5345");
+        body.setPhone("%^$%&#$%!@#%");
+        body.setConfig("1");
+        body.setLocale("ru_RUUUU");
+        body.setC_code("RUKrt");
+        body.setTimezone("Europer/Moscowic");
+        body.setCurrency_code("RUBER");
+
+        LombokResponse response = given()
+                .spec(regRequestSpec)
+                .body(body)
+                .when()
+                .post()
+                .then()
+                .spec(errorRegResponse)
                 .extract()
                 .as(LombokResponse.class);
 
