@@ -3,20 +3,26 @@ package api.registration;
 import api.data.userdata.UserData;
 import api.models.LombokBody;
 import api.models.LombokResponse;
+import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.*;
 import static api.specs.ErrorsSpecs.errorRegResponse;
 import static api.specs.ErrorsSpecs.errorRegResponseEmail;
 import static api.specs.RegSpecs.regRequestSpec;
 import static api.specs.RegSpecs.regResponseSpec;
-import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RegistrationTest {
 
-
-
+//    @Test
+//    public void test(){
+//        post("https://dev01.my2can.com/rest/rest_auth.json/0?action=getToken").getBody().print();
+//    }
     @Test
     @DisplayName("Positive. Registration account")
     public void registrationTestSuccessful() {
@@ -42,6 +48,17 @@ public class RegistrationTest {
                 .spec(regResponseSpec)
                 .extract()
                 .as(LombokResponse.class);
+
+
+        open("https://dev01.my2can.com/admin/sign-in");
+        $("#email").setValue(userData.email);
+        $("#password").setValue(userData.password);
+        $("[type=button]").click();
+        sleep(5000);
+        $("#sidebar").shouldBe(Condition.visible);
+
+//        post("https://dev01.my2can.com/rest/rest_auth.json/0?action=getToken").getBody().print();
+
     }
 
     @Test
@@ -63,7 +80,8 @@ public class RegistrationTest {
                 .extract()
                 .as(LombokResponse.class);
 
-        }
+    }
+
     @Test
     @DisplayName("Negative. Registration used email")
     public void registrationTestUsedEmail() {
