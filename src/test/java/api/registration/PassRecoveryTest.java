@@ -1,6 +1,5 @@
 package api.registration;
 
-import api.data.userdata.UserData;
 import api.models.LombokBody;
 import api.models.LombokResponse;
 import org.junit.jupiter.api.DisplayName;
